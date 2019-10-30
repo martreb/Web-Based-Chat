@@ -13,12 +13,10 @@ while (!userName) {
         sends relative to host (i.i "localhost:3000/")
     -data, data sent to the server.
 */
-var data = { "query": "new user", "name": name }
-$.get("/chat", JSON.stringify(data)).done((data) => {
+$.post("/chat", { "query": "new user", "name": name }).done((data) => {
     //handle success
     alert(data);
 }).fail((data) => {
     //handle error
     alert(data);
 });
-console.log({ "query": "new user", "name": name });

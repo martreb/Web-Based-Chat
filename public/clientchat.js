@@ -1,11 +1,14 @@
 //Javascript files run top-to-bottom at the time of their load.
 //initialize user's name
 var userName = prompt("Name:");
+
 //userName evaluates to false while equal to 0, "", false, null, or undefined. In any of these cases, ask for a different name.
 while (!userName) {
     userName = prompt("Invalid Name. \nName:");
 }
 
+var socket = io();
+console.log(socket);
 //the $ represents Jquery, the library we are using.
 //Post to server root, saying "we exist" and asking.
 /*$.get parameters:
@@ -13,12 +16,12 @@ while (!userName) {
         sends relative to host (i.i "localhost:3000/")
     -data, data sent to the server.
 */
-$.post("/chat", { "query": "new user", "name": name }).done((data) => {
+$.post("/chat", { "query": "new user", "name": userName }).done((data) => {
     //handle success
     alert(data);
 }).fail((data) => {
     //handle error
-    alert(data);
+    console.log("There was an error connecting to the server.");
 });
 
 /**
@@ -27,7 +30,11 @@ Handles logic for when the user enters a message
  */
 function messageEntered(msg) {
     //Put server communication code here
-    addMessage(msg);
+    $.post("/chat", { "query": "post","name": userName, "message": msg }).done((data) => {
+        //success
+    }).fail((data) => {
+        console.log(data);
+    })
 }
 
 /**ß
@@ -41,7 +48,7 @@ function addMessage(msg) {
     wrapper.className = "message";
     //create paragraph text element
     var text = document.createElement("p");
-    text.innerHTML = userName + ": " + msg;
+    text.innerHTML = msg;
     //add children
     wrapper.appendChild(text);
     messageBox.appendChild(wrapper);
@@ -59,3 +66,6 @@ textInput.addEventListener("input", () => {
     }
 });
 
+socket.on("message",(msg)=>{
+    addMessage(msg.name+": "+msg.text);
+});

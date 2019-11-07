@@ -1,6 +1,8 @@
 
 body{
     margin:0;
+    background-color: #222;
+    color:tomato;
 }
 
 #msgColumn{
@@ -30,9 +32,13 @@ body{
     width:100%;
     margin:0.5% 0;
     padding:0 0 0 2.5%;
-    background-image: -webkit-linear-gradient(left, #AAA 0%, #EDEDED 10%, #FFF 100%);
-    background-image:    -moz-linear-gradient(left, #AAA 0%, #EDEDED 10%, #FFF 100%);
-    background-image:     -ms-linear-gradient(left, #AAA 0%, #EDEDED 10%, #FFF 100%);
-    background-image:      -o-linear-gradient(left, #AAA 0%, #EDEDED 10%, #FFF 100%);
-    background-image:         linear-gradient(left, #AAA 0%, #EDEDED 10%, #FFF 100%);
+    border-left: 5px solid orangered;
+}
+textarea{
+    border:none;
+    background:none;
+    outline-color: orangered;
+    color: orangered;
+    height:20vh;
+    max-height:40vh;
 }

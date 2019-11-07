@@ -7,7 +7,7 @@ while (!userName) {
     userName = prompt("Invalid Name. \nName:");
 }
 
-var socket = io();
+var socket = io("/",{query: "name="+userName});
 console.log(socket);
 //the $ represents Jquery, the library we are using.
 //Post to server root, saying "we exist" and asking.

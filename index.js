@@ -6,15 +6,46 @@ const socket = require("socket.io");
 const http = require("http");
 const port = process.env.port || 3000;
 
+//the list of the names of currently connected clients
+var connectedClients = {};
+
 //calling express creates a server. Right now the server is not listening to any port/url.
 var app = express();
-var server=http.Server(app);
+var server = http.Server(app);
 
 //set up socket connections
 var io = socket(server);
-io.on("connection",(sock)=>{
-    console.log("New client connected.");
+
+//handle incoming connections
+io.on("connection", (sock) => {
+    //give just the new user the list of connected people
+    var names = "";
+    for (addr in connectedClients) {
+        names += connectedClients[addr] + " "
+    }
+    if (names.length < 1) {
+        names = "You are the first to connect!";
+    }
+    sock.emit("message", { "text": names, "name": "Already Connected" })
+
+    //add new client to list
+    var name = sock.handshake.query.name;
+    var address = sock.handshake.address;
+    if (connectedClients[address]) {
+        //already exists, changing name
+        io.emit("message", { "text": "<em>changed their name to " + name, "name": connectedClients[address] });
+    } else {
+        //tell everybody who connected
+        io.emit("message", { "text": "<em>joined the chat</em>", "name": name });
+    }
+    connectedClients[address] = name;
+
+    //set up code to handle client disconnect
+    sock.on("disconnect", () => {
+        io.emit("message", { "name": connectedClients[address], "text": "<em>has left the chat.<em>" });
+    });
 });
+
 
 //parse the body
 app.use(bodyParser.urlencoded({
@@ -27,12 +58,9 @@ app.use(express.static("public"));
 app.post("/chat", (request, response) => {
     data = request.body;
     switch (data.query) {
-        case "new user":
-            io.emit("message",{"text":"<em>joined the chat</em>","name":data.name});
-            break;
         case "post":
             console.log(data);
-            io.emit("message",{"text":data.message,"name": data.name})
+            io.emit("message", { "text": data.message, "name": data.name })
             response.sendStatus(200);
             break;
         default:
@@ -41,4 +69,4 @@ app.post("/chat", (request, response) => {
 })
 
 server.listen(port);
-console.log("Server started successfully.");
+console.log("Server started.");
